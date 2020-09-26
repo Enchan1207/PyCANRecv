@@ -1,26 +1,27 @@
 #
-# CAN受信スレッド
+# CAN受信スレッド example
 #
-from Receiver import Receiver
+from Receiver import ReceiveThread
 import threading, queue
 
 def main():
     recvQueue = queue.Queue()
-    rct = Receiver(queue = recvQueue)
+    rct = ReceiveThread(recvQueue = recvQueue, channel = 'vcan1')
     rct.setDaemon(True)
     rct.start()
+    print("Receive-thread Start...")
 
-    print("Start...")
-
+    # 適度にdeQueueしてメッセージをダンプ
     endReq = False
     try:
         while not endReq:
-            item = recvQueue.get(timeout = 10)
-            if item is None:
+            try:
+                item = recvQueue.get(timeout = 10)
+                print("ID: {0} Data: {1}".format(item.arbitration_id, item.data))
+            except queue.Empty:
+                print("--- CAN Receive Timeout! ---")
                 endReq = True
                 continue
-
-            print(item)
             
     except KeyboardInterrupt:
         print("Interrupt")

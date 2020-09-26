@@ -2,4 +2,4 @@
 # CAN受信スレッド
 #
 
-from .Receiver import Receiver
+from .ReceiveThread import ReceiveThread
